@@ -1,0 +1,12 @@
+{
+  "name": "QuizardApp",
+  "displayName": "QuizardApp",
+  "expo": {
+    "name": "QuizardApp",
+    "slug": "QuizardApp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
