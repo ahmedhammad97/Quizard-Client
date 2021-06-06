@@ -47,7 +47,8 @@ function WaitingRoomScreen({ navigation }) {
         // Listen to StartGame event
         socket.on("questions", data => {
             navigation.navigate('Game', {
-                'questions': data,
+                'questions': data.questions,
+                'settings': data.settings,
                 'roomCode': roomCode,
                 'playerName': playerName,
                 'socket': socket
