@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Countdown from 'react-countdown';
 
 function GameScreen({ navigation }) {
     const roomCode = navigation.getParam('roomCode');
@@ -10,10 +11,11 @@ function GameScreen({ navigation }) {
     const settings = navigation.getParam('settings');
     const socket = navigation.getParam('socket');
     const iconNames = ['arrow-up', 'arrow-down', 'repeat', 'undo']
+    
 
     const [score, setScore] = useState(0);
     const [questionIndex, setQuestionIndex] = useState(0);
-    const [currentTimer, setCurrentTimer] = useState(0);
+    const [currentTime, setCurrentTime] = useState(Date.now() + (1000 * settings.time));
 
     return (
         <View style={styles.container}>
@@ -21,7 +23,25 @@ function GameScreen({ navigation }) {
                 <Text styles={styles.firstHeadline}>{`Room Code: ${roomCode}`}</Text>
                 <Text styles={styles.firstHeadline}>{`Your Nick Name: ${playerName}`}</Text>
             </View>
-            <Text style={styles.headline}>{`Timer: ${currentTimer} | Score: ${score}`}</Text>
+            <View style={styles.secondHeadlineContainer}>
+                <Countdown
+                    key={questionIndex}
+                    date={currentTime}
+                    onComplete={() => {
+                        if(questionIndex < questions.length - 1) {
+                            setQuestionIndex(questionIndex+1);
+                            setCurrentTime(currentTime + (1000 * settings.time)); 
+                        }
+                        else console.log("Game Ended!");
+                    }}
+                    renderer={({ hours, minutes, seconds, completed }) => {
+                        if(completed) return <Text style={styles.secondHeadline}>{`Timer: `}</Text>
+                        else return <Text style={styles.secondHeadline}>{`Timer: ${seconds}`}</Text>
+                    }}
+                    
+                />
+                <Text style={styles.secondHeadline}>{`Score: ${score}`}</Text>
+            </View>
             <Text style={styles.question}>{questions[questionIndex].question}</Text>
             <View style={styles.answerPanel}>
                 {
@@ -32,7 +52,7 @@ function GameScreen({ navigation }) {
                             style={styles.answer}
                             type='outline'
                             title={'  ' + answer}
-                            onPress={() => { setQuestionIndex(questionIndex+1); }}
+                            onPress={() => { console.log("Answer"); setQuestionIndex(questionIndex+1) }}
                             icon={
                                 <Icon
                                     name={iconNames[index]}
@@ -66,7 +86,13 @@ const styles = StyleSheet.create({
         fontSize: 15,
         flexGrow: 1
     },
-    headline: {
+    secondHeadlineContainer: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    secondHeadline: {
         textAlign: 'center',
         fontSize: 20,
         color: 'grey',
