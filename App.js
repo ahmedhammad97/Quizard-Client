@@ -6,13 +6,15 @@ import GameScreen from './components/gameScreen';
 import CreateRoomScreen from './components/createRoomScreen';
 import JoinRoomScreen from './components/joinRoomScreen';
 import WaitingRoomScreen from './components/waitingRoomScreen';
+import EndScreen from './components/EndScreen';
 
 const MainNavigator = createStackNavigator({
   Home: {screen: HomeScreen},
   CreateRoom: {screen: CreateRoomScreen},
   JoinRoom: {screen: JoinRoomScreen},
   WaitingRoom: {screen: WaitingRoomScreen},
-  Game: {screen: GameScreen}
+  Game: {screen: GameScreen},
+  End: {screen: EndScreen}
 });
 
 const App = createAppContainer(MainNavigator);
