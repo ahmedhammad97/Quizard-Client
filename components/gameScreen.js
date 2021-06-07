@@ -16,6 +16,22 @@ function GameScreen({ navigation }) {
     const [score, setScore] = useState(0);
     const [questionIndex, setQuestionIndex] = useState(0);
     const [currentTime, setCurrentTime] = useState(Date.now() + (1000 * settings.time));
+    const [answerLock, setAnswerLock] = useState(false);
+
+    useEffect(() => {
+        socket.on("pointConfirmed", () => {
+            setScore(score+1);
+        });
+
+        socket.on('winner', data => {
+            navigation.navigate('End', {
+                'isWinner': data === playerName,
+                'winner': data,
+                'roomCode': roomCode,
+                'socket': socket
+            })
+        });
+    });
 
     return (
         <View style={styles.container}>
@@ -27,13 +43,7 @@ function GameScreen({ navigation }) {
                 <Countdown
                     key={questionIndex}
                     date={currentTime}
-                    onComplete={() => {
-                        if(questionIndex < questions.length - 1) {
-                            setQuestionIndex(questionIndex+1);
-                            setCurrentTime(currentTime + (1000 * settings.time)); 
-                        }
-                        else console.log("Game Ended!");
-                    }}
+                    onComplete={() => { processNextQuestion(questionIndex); }}
                     renderer={({ hours, minutes, seconds, completed }) => {
                         if(completed) return <Text style={styles.secondHeadline}>{`Timer: `}</Text>
                         else return <Text style={styles.secondHeadline}>{`Timer: ${seconds}`}</Text>
@@ -52,7 +62,8 @@ function GameScreen({ navigation }) {
                             style={styles.answer}
                             type='outline'
                             title={'  ' + answer}
-                            onPress={() => { console.log("Answer"); setQuestionIndex(questionIndex+1) }}
+                            disabled={answerLock}
+                            onPress={() => { processAnswer(answer, questionIndex) }}
                             icon={
                                 <Icon
                                     name={iconNames[index]}
@@ -66,6 +77,25 @@ function GameScreen({ navigation }) {
             </View>
         </View>
     )
+
+    function processAnswer(answer, index) {
+        if(answer === questions[index].correct && !answerLock) {
+            socket.emit('correctAnswer', {'roomCode': roomCode, 'questionIndex': index});
+        }
+        else {
+            setAnswerLock(true);
+        }
+    }
+
+    function processNextQuestion(index) {
+        if(index < questions.length - 1) {
+            setQuestionIndex(index+1);
+            setCurrentTime(currentTime + (1000 * settings.time));
+            questions[questionIndex].answers = questions[questionIndex].answers.sort( () => .5 - Math.random() )
+            setAnswerLock(false);
+        }
+        else socket.emit("finalScore", {"roomCode": roomCode, "score": score});
+    }
 }
 
 const styles = StyleSheet.create({
