@@ -3,6 +3,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Countdown from 'react-countdown';
+import { Gyroscope } from 'expo-sensors'
 
 function GameScreen({ navigation }) {
     const roomCode = navigation.getParam('roomCode');
@@ -17,6 +18,34 @@ function GameScreen({ navigation }) {
     const [questionIndex, setQuestionIndex] = useState(0);
     const [currentTime, setCurrentTime] = useState(Date.now() + (1000 * settings.time));
     const [answerLock, setAnswerLock] = useState(false);
+    const [coordinates, setCoordinates] = useState({x: 0, y: 0, z: 0});
+    const [subscription, setSubscription] = useState(null);
+
+    const _subscribe = () => {
+        setSubscription(
+            Gyroscope.addListener(gyroscopeData => {
+                setCoordinates(gyroscopeData);
+            })
+        );
+    };
+
+    const _unsubscribe = () => {
+        subscription && subscription.remove();
+        setSubscription(null);
+    };
+
+    useEffect(() => {
+        Gyroscope.setUpdateInterval(100);
+        _subscribe();
+        return () => _unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        if (coordinates.z > 2) processAnswer(questions[questionIndex].answers[3], questionIndex);
+        else if (coordinates.z < -2) processAnswer(questions[questionIndex].answers[2], questionIndex);
+        else if (coordinates.y > 2) processAnswer(questions[questionIndex].answers[0], questionIndex);
+        else if (coordinates.z < -2) processAnswer(questions[questionIndex].answers[1], questionIndex);
+    }, [coordinates]);
 
     useEffect(() => {
         socket.on("pointConfirmed", () => {
@@ -79,19 +108,15 @@ function GameScreen({ navigation }) {
     )
 
     function processAnswer(answer, index) {
-        if(answer === questions[index].correct && !answerLock) {
+        if(answer === questions[index].correct && !answerLock) 
             socket.emit('correctAnswer', {'roomCode': roomCode, 'questionIndex': index});
-        }
-        else {
-            setAnswerLock(true);
-        }
+        setAnswerLock(true);
     }
 
     function processNextQuestion(index) {
         if(index < questions.length - 1) {
             setQuestionIndex(index+1);
             setCurrentTime(currentTime + (1000 * settings.time));
-            questions[questionIndex].answers = questions[questionIndex].answers.sort( () => .5 - Math.random() )
             setAnswerLock(false);
         }
         else socket.emit("finalScore", {"roomCode": roomCode, "score": score});

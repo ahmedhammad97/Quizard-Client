@@ -3225,6 +3225,14 @@ expo-screen-orientation@~3.1.0:
   dependencies:
     "@expo/config-plugins" "^1.0.18"
 
+expo-sensors@~10.1.2:
+  version "10.1.2"
+  resolved "https://registry.yarnpkg.com/expo-sensors/-/expo-sensors-10.1.2.tgz#e27d0683c72fdcf1f7361f3372658b06d77d3c6e"
+  integrity sha512-XTC5ay4XMmv6ughWzdDBMsKwsdBimxUubWUbqLDC1Xye3RzphZ7fky9sfaKsqBONRhUhtAcuHvcoAx6GV5en4A==
+  dependencies:
+    "@expo/config-plugins" "^1.0.18"
+    invariant "^2.2.4"
+
 expo-splash-screen@~0.10.2:
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.10.2.tgz#3e3d7c24c4ed180a60ce3ec64a77eefd04dd0d97"
