@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 function HomeScreen({ navigation }) {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    useEffect(() => {
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    }, [])
+
     return (
         <View style={styles.container}>
             <Text style={styles.headline}>Quizard App</Text>
