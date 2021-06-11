@@ -1,12 +1,15 @@
 {
   "name": "QuizardApp",
-  "displayName": "QuizardApp",
+  "displayName": "Quizard App",
   "expo": {
     "name": "QuizardApp",
     "slug": "QuizardApp",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "android": {
+      "package": "com.android.quizard.game"
+    }
   }
 }
