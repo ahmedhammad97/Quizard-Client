@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { Button } from 'react-native-elements';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 function EndScreen({ navigation }) {
@@ -20,16 +19,6 @@ function EndScreen({ navigation }) {
                 <Text style={styles.headline}>You are the Winner!</Text> :
                 <Text style={styles.headline}>{`${winnerName} is the Winner!`}</Text>
             }
-
-            {
-                isWinner && <Button
-                    title="Restart?"
-                    titleStyle={styles.btnTitle}
-                    buttonStyle={styles.btn}
-                    onPress={() => console.log("Not too fast!")}
-                />
-            }
-
         </View>
     )
 }
